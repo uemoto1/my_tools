@@ -53,7 +53,6 @@ nfield = len(elem_field)
 
 proj = np.zeros([ispin, nk, nbands, natom, nfield])
 
-
 elem_set1 = root.find("calculation/projected/array/set")
 for elem_set_spin in elem_set1:
     comment = elem_set_spin.attrib["comment"]
@@ -84,33 +83,24 @@ for iion1 in range(1, natom+1):
             buff[:, 0] = xk[:]
             buff[:, 1:] = proj[iispin1-1, :, :, iion1-1, ifield]
             np.savetxt(name, buff, fmt="%+12.6e")
-            print(name)
+            print("# Generated %s" % name)
+
+        for iispin1 in range(1, ispin+1):
+            name = "proj%03d_%s_spin%d.txt" % (iion1, tag, iispin1)
+            buff[:, 0] = xk[:]
+            buff[:, 1:] = proj[iispin1-1, :, :, iion1-1, ifield]
+            np.savetxt(name, buff, fmt="%+12.6e")
+            print("# Generated %s" % name)
 
 
+for i0 in range(ispin):
+    name = "band_spin%d.txt" % (i0+1)
+    buff = np.zeros([nk, nbands+1])
+    buff[:, 0] = xk[:]
+    buff[:, 1:] = band[i0, :, :]
+    np.savetxt(
+        name, buff,
+        header="k Energy-eV[eV]", fmt="%+12.6e"
+    )
+    print("# Generated %s" % name)
 
-# for i0 in range(ispin):
-#     name = "band_spin%d.txt" % (i0+1)
-#     buff = np.zeros([nk, nbands+1])
-#     buff[:, 0] = xk[:]
-#     buff[:, 1:] = data[i0, :, :]
-#     np.savetxt(
-#         name, buff,
-#         header="k Energy-eV[eV]", fmt="%+12.6e"
-#     )
-#     print("# Generated %s" % name)
-
-
-# if "-x" in sys.argv:
-#     import matplotlib.pyplot as plt
-#     xmax = np.amax(xk)
-#     ymin = np.amin(data[:, :, 0])
-#     ymax = np.amin(data[:, :, -1])
-#     if ispin == 1:
-#         plt.plot(xk[:], data[0, :, :], "-k")
-#     else: # ispin == 2
-#         plt.plot(xk[:], data[0, :, :], "-r")
-#         plt.plot(xk[:], data[1, :, :], "-b")
-#     plt.plot([0, xmax], [0, 0], "--k")
-#     plt.xlim([0, xmax])
-#     plt.ylim([ymin, ymax])
-#     plt.show()
