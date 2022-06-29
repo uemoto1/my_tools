@@ -8,10 +8,13 @@ root = ET.parse('vasprun.xml').getroot()
 
 ispin = int(root.find(".//i[@name='ISPIN']").text)
 print("# ispin=%d" % ispin)
+
 nedos = int(root.find(".//i[@name='NEDOS']").text)
 print("# nedos=%d" % nedos)
+
 natom = int(root.find(".//atoms").text)
 print("# natom=%d" % natom)
+
 efermi = float(root.find(".//i[@name='efermi']").text)
 print("# efermi=%f" % efermi)
 
