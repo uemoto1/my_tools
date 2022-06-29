@@ -12,7 +12,7 @@ ispin = int(root.find(".//i[@name='ISPIN']").text)
 print("# ispin=%d" % ispin)
 
 nedos = float(root.find(".//i[@name='NEDOS']").text)
-print("# nedos=%f" % nedos)
+print("# nedos=%d" % nedos)
 
 efermi = float(root.find(".//i[@name='efermi']").text)
 print("# efermi=%f" % efermi)
@@ -29,7 +29,7 @@ for element_set_spin in element_set1:
         data[n, i] = float(tmp[1])
 
 np.savetxt("tdos.txt", data, 
-    header="# Energy-EF[eV] DoS[1/eV]", fmt="%+12.6e")
+    header="Energy-EF[eV] DoS[1/eV]", fmt="%+12.6e")
 print("# Generated tdos.txt")
 
 

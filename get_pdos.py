@@ -12,7 +12,7 @@ ispin = int(root.find(".//i[@name='ISPIN']").text)
 print("# ispin=%d" % ispin)
 
 nedos = float(root.find(".//i[@name='NEDOS']").text)
-print("# nedos=%f" % nedos)
+print("# nedos=%d" % nedos)
 
 efermi = float(root.find(".//i[@name='efermi']").text)
 print("# efermi=%f" % efermi)
@@ -47,7 +47,7 @@ if nfield > 0:
             name = "pdos%03d_%s.txt" % (ion0+1, tag)
             np.savetxt(
                 name, data[ion0, ifield0, :, :], 
-                header="# Energy-EF[eV] DoS[1/eV]", fmt="%+12.6e"
+                header="Energy-EF[eV] DoS[1/eV]", fmt="%+12.6e"
             )
             print("# Generate %s" % name)
 
