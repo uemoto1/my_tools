@@ -31,12 +31,14 @@ for element_set_spin in element_set1:
         tdos[iispin1-1, n, 1] = float(tmp[1])
 
 # Export tdos data
-buff = np.zeros([nedos, ispin+1])
-buff[:, 0] = tdos[0, :, 0] 
-buff[:, 1] = tdos[0, :, 1]
-buff[:, 2] = tdos[1, :, 1]
-np.savetxt("tdos.txt", buff, 
-    header="Energy-EF[eV] DoS[1/eV]", fmt="%+12.6e")
+buff = np.zeros([nedos, ispin+2])
+buff[:, 0] = tdos[0, :, 0]
+buff[:, 1] = tdos[0, :, 0] - efermi
+buff[:, 2] = tdos[0, :, 1]
+if ispin == 2:
+    buff[:, 3] = tdos[1, :, 1]
+np.savetxt("tdos.txt", buff,
+    header="Energy[eV] Energy-EF[eV] DoS[1/eV]", fmt="%+12.6e")
 print("# Generated tdos.txt")
 
 if "-x" in sys.argv:
