@@ -58,7 +58,7 @@ for js in range(ISPIN):
         for jfield in range(nfield):
             name = "proj_ion/ion%03d_%s_spin%d.txt" % (jatom, field[jfield].strip(), js+1)
             print(name)
-            np.savetxt(name, buf[js, :, :, jatom, jfield], comment="row(kpoint) col(band)" fmt="%.3f")
+            np.savetxt(name, buf[js, :, :, jatom, jfield], header="row(kpoint) col(band)", fmt="%.3f")
 
 
 

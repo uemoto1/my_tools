@@ -23,7 +23,7 @@ for js in range(ISPIN):
 for js in range(ISPIN):
     dat = np.loadtxt("tdos_spin%d.txt" % (js+1))
     dat[:, 0] -= efermi
-    np.savetxt("tdos_ef_spin%d.txt" % (js+1), dat)
+    np.savetxt("tdos_ef0_spin%d.txt" % (js+1), dat)
         
 # if "-x" in sys.argv:
 #     import matplotlib.pyplot as plt
