@@ -2,7 +2,7 @@
 import xml.etree.ElementTree as ET
 import numpy as np
 import sys
-import re
+import os
 
 tree = ET.parse('vasprun.xml')
 root = tree.getroot()
@@ -24,54 +24,44 @@ print("# efermi=%f" % efermi)
 
 elem_array = root.find("./calculation/dos/partial/array")
 
-field = ""
+field = []
 for item in elem_array.findall("./field"):
-    field += item.text
+    field.append(item.text)
+nfield = len(field)
 
+if not os.path.isdir("pdos"):
+    os.mkdir("pdos")
 
 elem_set = elem_array.find("./set")
-
 for jion in range(natom):
     elem_set_ion = elem_set.find("./set[@comment='ion %d']" % (jion+1))
     for js in range(ISPIN):
         elem_set_spin = elem_set_ion.find("./set[@comment='spin %d']" % (js+1))
-        with open("pdos_ion%03d_spin%d.txt" % (jion+1, js+1), "w") as fh:
+        with open("pdos/ion%03d_spin%d.txt" % (jion+1, js+1), "w") as fh:
             print(fh.name)
-            fh.write("#" + field + "\n")
+            fh.write("#" + " ".join(field) + "\n")
             for r in elem_set_spin:
                 fh.write(r.text + "\n")
 
+dat = np.empty([natom, ISPIN, NEDOS, nfield])
+
 for jion in range(natom):
     for js in range(ISPIN):
-        dat = np.loadtxt("pdos_ion%03d_spin%d.txt" % (jion+1, js+1))
-        dat[:, 0] = dat[:, 0] - efermi
-        np.savetxt("pdos_ef_ion%03d_spin%d.txt" % (jion+1, js+1), dat, header=field)
+        dat[jion, js, :, :] = np.loadtxt("pdos/ion%03d_spin%d.txt" % (jion+1, js+1))
 
-# elem_field = root.findall("calculation/dos/partial/array/field")
-# for item in elem_field:
-#     print("# projection: %s" % item.text)
-# nfield = len(elem_field)
+if not os.path.isdir("pdos_orbit_ef0"):
+    os.mkdir("pdos_orbit_ef0")
 
-# if nfield == 0:
-#     sys.stderr("#ERROR: partial DoS is not exist!")
-#     sys.exit(-1)
-
-
-
-# pdos = np.zeros([ISPIN, natom, NEDOS, nfield])
-# element_set1 = root.find("calculation/dos/partial/array/set")
-# for element_set_ion in element_set1:
-#     comment = element_set_ion.attrib["comment"]
-#     iion1 = int(re.sub(r"ion\s*(\d+)", r"\1", comment))
-#     for element_set_spin in element_set_ion:
-#         comment = element_set_spin.attrib["comment"]
-#         iISPIN1 = int(re.sub(r"spin\s*(\d+)", r"\1", comment))
-#         for n, r in enumerate(element_set_spin):
-#             tmp = r.text.split()
-#             pdos[iISPIN1-1, iion1-1, n, 0] = float(tmp[0]) - efermi
-#             for ifield in range(1, nfield):
-#                 pdos[iISPIN1-1, iion1-1, n, ifield] = float(tmp[ifield])
-
+tmp = np.empty([NEDOS, 2])
+for jion in range(natom):
+    for ifield in range(1, nfield):
+        for js in range(ISPIN):
+            tmp[:, 0] = dat[jion, js, :, 0] - efermi
+            tmp[:, 1] = dat[jion, js, :, ifield]
+            name = "pdos_orbit_ef0/ion%03d_%s_spin%d.txt" % (jion+1, field[ifield].strip(), js+1)
+            print(name)
+            np.savetxt(name, tmp, header="Energy-E_F[eV] PDoS[1/eV]")
+            
 # # Export pdos data
 # buff = np.zeros([NEDOS, ISPIN+1])
 # for iion1 in range(1, natom+1):
