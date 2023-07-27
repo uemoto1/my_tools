@@ -63,8 +63,10 @@ for js in range(ISPIN):
     buf2 = np.empty([nrow, ncol+1])
     buf2[:, 0] = xlist
     buf2[:, 1:] = buf1[:, :] - efermi
-    np.savetxt("band_spin%d.txt" % (js+1), buf2)
-    print("band_spin%d.txt" % (js+1))
+
+    name = "band_ef0_spin%d.txt" % (js+1)
+    print(name)
+    np.savetxt(name, buf2, header="row(kpoint) col(klength, eigen)")
 
 
 

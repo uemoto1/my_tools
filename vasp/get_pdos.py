@@ -29,15 +29,15 @@ for item in elem_array.findall("./field"):
     field.append(item.text)
 nfield = len(field)
 
-if not os.path.isdir("pdos"):
-    os.mkdir("pdos")
+if not os.path.isdir("pdos_orig"):
+    os.mkdir("pdos_orig")
 
 elem_set = elem_array.find("./set")
 for jion in range(natom):
     elem_set_ion = elem_set.find("./set[@comment='ion %d']" % (jion+1))
     for js in range(ISPIN):
         elem_set_spin = elem_set_ion.find("./set[@comment='spin %d']" % (js+1))
-        with open("pdos/ion%03d_spin%d.txt" % (jion+1, js+1), "w") as fh:
+        with open("pdos_orig/ion%03d_spin%d.txt" % (jion+1, js+1), "w") as fh:
             print(fh.name)
             fh.write("#" + " ".join(field) + "\n")
             for r in elem_set_spin:
@@ -49,8 +49,8 @@ for jion in range(natom):
     for js in range(ISPIN):
         dat[jion, js, :, :] = np.loadtxt("pdos/ion%03d_spin%d.txt" % (jion+1, js+1))
 
-if not os.path.isdir("pdos_orbit_ef0"):
-    os.mkdir("pdos_orbit_ef0")
+if not os.path.isdir("pdos_ef0_orbit"):
+    os.mkdir("pdos_ef0_orbit")
 
 tmp = np.empty([NEDOS, 2])
 for jion in range(natom):
@@ -58,22 +58,10 @@ for jion in range(natom):
         for js in range(ISPIN):
             tmp[:, 0] = dat[jion, js, :, 0] - efermi
             tmp[:, 1] = dat[jion, js, :, ifield]
-            name = "pdos_orbit_ef0/ion%03d_%s_spin%d.txt" % (jion+1, field[ifield].strip(), js+1)
+            name = "pdos_ef0_orbit/ion%03d_%s_spin%d.txt" % (jion+1, field[ifield].strip(), js+1)
             print(name)
             np.savetxt(name, tmp, header="Energy-E_F[eV] PDoS[1/eV]")
             
-# # Export pdos data
-# buff = np.zeros([NEDOS, ISPIN+1])
-# for iion1 in range(1, natom+1):
-#     for ifield in range(1, nfield):
-#         tag = elem_field[ifield].text.replace(" ", "")
-#         name = "pdos%03d_%s.txt" % (iion1, tag)
-#         buff[:, 0] = pdos[0, 0, :, 0]
-#         for iISPIN in range(1, ISPIN):
-#             buff[:, iISPIN] = pdos[iISPIN-1, iion1-1, :, ifield]
-#         np.savetxt(name, buff, 
-#             header="Energy-EF[eV] DoS[1/eV]", fmt="%+12.6e")
-#         print("# Generated %s" % name)
         
 
 
