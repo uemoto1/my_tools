@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
-# import optparse
-import xml.etree.ElementTree as ET
 import numpy as np
-import re
-import sys
+import xml.etree.ElementTree as ET
 
 tree = ET.parse('vasprun.xml')
 root = tree.getroot()
@@ -31,23 +28,12 @@ for tmp in elem_kpointlist:
     kpoint = np.fromstring(tmp.text, sep=" ", dtype=float)
     kpointlist.append(kpoint)
     print("# kpoint (%+.3f, %+.3f, %+.3f)" % tuple(kpoint))
-nk = len(kpointlist)
-
-
-elem_set = root.find("./calculation/eigenvalues/array/set")
-for js in range(ISPIN):
-    elem_set_spin = elem_set.find("./set[@comment='spin %d']" % (js+1))
-    with open("eigen_spin%d.txt" % (js+1), "w") as fh:
-        print(fh.name)
-        for jk in range(nk):
-            elem_set_kpoint = elem_set_spin.find("./set[@comment='kpoint %d']" % (jk+1))
-            for r in elem_set_kpoint:
-                fh.write(" " + r.text.split()[0])
-            fh.write("\n")
+num_kpoint = len(kpointlist)
+print("# num_kpoint = %d" % num_kpoint)
 
 # Calculate x coordinate
 xlist = []
-for jk in range(nk):
+for jk in range(num_kpoint):
     vec_k = np.dot(kpointlist[jk], [vec_b1, vec_b2, vec_b3])
     if jk == 0:
         x = 0.0
@@ -56,32 +42,29 @@ for jk in range(nk):
         x += dk
     vec_k_prev = vec_k
     xlist.append(x)
+    print("# x[%d]: %.6f" % (jk, x))
 
+print("# Extracting eigenenergy ...")
+dat = np.zeros([ISPIN, num_kpoint, NBANDS, 1+1])
+elem_set = root.find("./calculation/eigenvalues/array/set")
 for js in range(ISPIN):
-    buf1 = np.loadtxt("eigen_spin%d.txt" % (js+1))
-    nrow, ncol = buf1.shape
-    buf2 = np.empty([nrow, ncol+1])
-    buf2[:, 0] = xlist
-    buf2[:, 1:] = buf1[:, :] - efermi
+    elem_set_spin = elem_set.find("./set[@comment='spin %d']" % (js+1))
+    for jk in range(num_kpoint):
+        elem_set_kpoint = elem_set_spin.find("./set[@comment='kpoint %d']" % (jk+1))
+        buf = []
+        for r in elem_set_kpoint:
+            tmp = np.fromstring(r.text, sep=" ", dtype=float)
+            buf.append(tmp)
+        dat[js, jk, :, :] = buf
 
+print("# Writing output files ...")
+tmp = np.zeros([num_kpoint, 1+NBANDS])
+for js in range(ISPIN):
     name = "band_ef0_spin%d.txt" % (js+1)
     print(name)
-    np.savetxt(name, buf2, header="row(kpoint) col(klength, eigen)")
+    tmp[:, 0] = xlist
+    tmp[:, 1:] = dat[js, :, :, 0] - efermi
+    np.savetxt(name, tmp, header="row(kpoint) col(klength, eigen)", fmt="%.6f")
 
 
 
-
-# if "-x" in sys.argv:
-#     import matplotlib.pyplot as plt
-#     xmax = np.amax(xk)
-#     ymin = np.amin(band[:, :, 0])
-#     ymax = np.amin(band[:, :, -1])
-#     if ISPIN == 1:
-#         plt.plot(xk[:], band[0, :, :], "-k")
-#     else: # ISPIN == 2
-#         plt.plot(xk[:], band[0, :, :], "-r")
-#         plt.plot(xk[:], band[1, :, :], "-b")
-#     plt.plot([0, xmax], [0, 0], "--k")
-#     plt.xlim([0, xmax])
-#     plt.ylim([ymin, ymax])
-#     plt.show()
