@@ -10,6 +10,7 @@ def run(file_input, file_output, setting, dpi):
         "-sDEVICE=%s" % setting,
         "-r%d" % dpi,
         "-dGraphicsAlphaBits=4",
+        "-dTextAlphaBits=4",
         "-o", file_output,
         file_input,
     ])
@@ -26,7 +27,7 @@ if __name__ == "__main__":
         if os.path.isfile(file_input):
             name, ext = os.path.splitext(file_input)
             file_output = "%s%s.png" % (name, args.suffix)
-            sys.stdout.write(f"Convert {file_input} -> {file_output}\n")
+            sys.stdout.write(f"Convert {file_input} to png\n")
             run(file_input, file_output, args.setting, args.dpi)
         else:
             sys.stderr.write(f"ERROR: {file_input} is not found!\n")
