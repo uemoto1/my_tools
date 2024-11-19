@@ -27,21 +27,3 @@ for js in range(ISPIN):
     print(name)
     np.savetxt(name, dat, header="Energy-EF[eV] DoS[1/eV]")
         
-# if "-x" in sys.argv:
-#     import matplotlib.pyplot as plt
-#     xmin = np.amin(tdos[0, :, 0])
-#     xmax = np.amax(tdos[0, :, 0])
-#     ymax = np.amax(tdos[:, :, 1])
-#     plt.plot(tdos[0, :, 0], +tdos[0, :, 1], "-k")
-#     plt.xlim([xmin, xmax])
-#     if ispin == 1:
-#         plt.plot([0, 0], [0, ymax], "--k")
-#         plt.ylim([0, ymax])
-#     else: # ispin == 2
-#         plt.plot(tdos[1, :, 0], -tdos[1, :, 1], "-k")
-#         plt.plot([xmin, xmax], [0, 0], "--k")
-#         plt.plot([0, 0], [-ymax, ymax], "--k")
-#         plt.ylim([-ymax, ymax])
-#     plt.xlabel("Energy [eV]")
-#     plt.ylabel("DoS [1/eV]")
-#     plt.show()
