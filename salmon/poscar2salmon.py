@@ -1,37 +1,6 @@
-import sys
-import numpy as np
+#!/usr/bin/env python3
 
-bohr_ang = 0.529177210903
 
-with open("POSCAR") as fh:
-    line = fh.readlines()
-
-title = line[0].strip()
-alat = float(line[1])
-vec_a1 = alat * np.fromstring(line[2], sep=" ", dtype=float)
-vec_a2 = alat * np.fromstring(line[3], sep=" ", dtype=float)
-vec_a3 = alat * np.fromstring(line[4], sep=" ", dtype=float)
-element_list = line[5].split()
-num_atom_list = np.fromstring(line[6], sep=" ", dtype=int)
-mode = line[6].strip().lower()
-
-if mode != "direct":
-    sys.exit(-1)
-
-if "selective" in line[7].lower():
-    k = 8
-else:
-    k = 7
-
-atom_xyz_list = []
-for e, n in zip(element_list, num_atom_list):
-    for i in range(n):
-        t = np.array(line[k].split()[0:3])
-        if mode == "direct":
-            r = vec_a1 * t[0] + vec_a2 * t[1] + vec_a3 * t[2]
-            atom_xyz_list.append((e, r))
-        elif mode == "cartesian":
-            atom_xyz_list.append((e, t))
 
 
 template = """
@@ -57,7 +26,7 @@ template = """
 
 &system
   yn_periodic = 'y'
-  al(1:3) = {LX:.6f}d0, {LY:.6f}d0, {LZ:.6f}d0
+  al(1:3) = {ALX:.6f}d0, {ALY:.6f}d0, {ALZ:.6f}d0
   nelem = {NELEM}
   natom = {NATOM}
   nelec = {NELEC}
@@ -65,7 +34,7 @@ template = """
 /
 
 &pseudo
-{PSEUDO_TBL}
+{PSEUDO}
 /
 
 &functional
@@ -73,11 +42,11 @@ template = """
 /
 
 &rgrid
-  num_rgrid(1:3) = 16, 16, 16
+  num_rgrid(1:3) = {NRX}, {NRY}, {NRZ}
 /
 
 &kgrid
-  num_kgrid(1:3) = 8, 8, 8
+  num_kgrid(1:3) = {NUM_KGRID}
 /
 
 &scf
@@ -91,17 +60,74 @@ template = """
 /
 
 &atomic_red_coor
-{COOR_TBL}
+{COOR}
 /
-
 """
 
+pseudo_tbl = {
+  "Si": {"number": 14, "file": "./Si_rps.dat", "lloc": 1, "nelec": 4},
+  "H": {"number": 1, "file": "./Si_rps.dat", "lloc": 0, "nelec": 1},
+}
+
+bohr_ang = 0.529177210903
+epsilon = 1e-6
+
+import sys
+import numpy as np
+import argparse
+from pymatgen.core import Structure
+
+parser = argparse.ArgumentParser()
+parser.add_argument('filename', default="POSCAR")
+parser.add_argument('--density', default=0.6, type=float)
+parser.add_argument('--nkgrid', default="1,1,1")
+args = parser.parse_args()
+
+structure = Structure.from_file(args.filename)
+density = float(args.density)
+
+alx = structure.lattice.a / bohr_ang
+aly = structure.lattice.b / bohr_ang
+alz = structure.lattice.c / bohr_ang
+
+element_set = set([])
+for site in structure:
+    element_set.add(site.specie.symbol)
+element_list = list(element_set)
+
+pseudo = []
+n = 1
+for symbol in element_list:
+    file = pseudo_tbl[symbol]["file"]
+    number = pseudo_tbl[symbol]["number"]
+    lloc = pseudo_tbl[symbol]["lloc"]
+    pseudo.append(f"file_pseudo({n}) = '{file}'")
+    pseudo.append(f"izatom({n}) = {number}")
+    pseudo.append(f"lloc_ps({n}) = {lloc}")
+    n = n + 1
+
+coor = []
+nelec = 0
+for site in structure:
+    RX, RY, RZ = site.frac_coords
+    N = element_list.index(site.specie.symbol) + 1
+    coor.append(f"'atom' {RX:.6f}d0 {RY:.6f}d0 {RZ:.6f}d0 {N}")
+    nelec += pseudo_tbl[site.specie.symbol]["nelec"]
 
 
+print(template.format(
+  ALX=alx,
+  ALY=aly,
+  ALZ=alz,
+  NRX=round(alx/density),
+  NRY=round(aly/density),
+  NRZ=round(alz/density),
+  NUM_KGRID=args.nkgrid,
+  PSEUDO="\n".join(pseudo),
+  COOR="\n".join(coor),
+  NELEM=len(element_list),
+  NATOM=len(structure),
+  NELEC=nelec,
+  NSTATE=nelec,
+))
 
-
-
-PSEUDO_LIST = ""
-  file_pseudo(1) = './Si_rps.dat'
-  izatom(1) = 14
-  lloc_ps(1) = 2
