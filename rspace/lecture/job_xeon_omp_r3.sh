@@ -6,5 +6,5 @@
 #$ -cwd
 export OMP_NUM_THREADS=$NSLOTS
 
-./kukan8
+mpiexec.hydra -n 1 ./kukan8
 
