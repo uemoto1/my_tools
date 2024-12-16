@@ -1,0 +1,19 @@
+&nml_inp_prm_kukan
+    nprocx = 2
+    nprocy = 2
+    nprocz = 2
+    xmax = 10.0d0
+    ymax = 10.0d0
+    zmax = 10.0d0
+    nxmax = 30
+    nymax = 30
+    nzmax = 30
+    neigmx = 8
+    natom = 2
+    nperi = 0
+    eta = 0.2d0
+    npre = 1
+    nspv = 2
+    pol_pre = 2.5d0
+/
+
