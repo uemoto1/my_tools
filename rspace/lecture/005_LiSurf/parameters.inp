@@ -1,0 +1,16 @@
+&nml_inp_prm_kukan
+    xmax = 3.32d0
+    ymax = 3.32d0
+    zmax = 13.28d0
+    nxmax = 10
+    nymax = 10
+    nzmax = 40
+    neigmx = 16
+    natom = 4
+    nperi = 2
+    eta = 0.2d0
+    npre = 1
+    nspv = 1
+/
+
+
