@@ -55,12 +55,14 @@ if args.nthread > 1:
 else:
     result_list = list(map(run, target_list))
 
-with open(f"{basedir}/jm_z_omega_n.txt", "w") as fh:
-    print(fh.name)
-    fh.write("imacro n omega_n re_jm_omega_n im_jm_omega_n\n")
-    for imacro, result in zip(target_list, result_list):
-        for n, omega_n, re_jm_omega_n, im_jm_omega_n in result:
-            fh.write(f"{imacro:6d} {n:6d} {omega_n:12.6f} {re_jm_omega_n:+12.3e} {im_jm_omega_n:+12.3e}\n")
+for m in range(n_order_max+1):
+    with open(f"{basedir}/jm_z_omega_{m}.txt", "w") as fh:
+        print(fh.name)
+        fh.write("# imacro re_jm_omega_n im_jm_omega_n\n")
+        for imacro, result in zip(target_list, result_list):
+            for n, omega_n, re_jm_omega_n, im_jm_omega_n in result:
+                if n == m:
+                    fh.write(f"{imacro:6d} {re_jm_omega_n:+15.6e} {im_jm_omega_n:+15.6e}\n")
 
 
 
