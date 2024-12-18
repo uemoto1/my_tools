@@ -1,3 +1,4 @@
+ia01 004_cylinder_5e12]$ cat ../angle_spec.py 
 #!/usr/bin/env python3
 import numpy as np
 
@@ -43,7 +44,6 @@ with open(f"{basedir}/.shape.txt", "r") as fh:
         imacro, ix, iy, iz = map(int, tmp[0:4])
         point[imacro] = (ix, iy, iz)
 target_list = list(range(1, macro+1))
-#target_list = [1, 2, 3]
 
 import scipy.signal
 
@@ -89,8 +89,8 @@ for iangle, angle in enumerate(angle_array):
                     x * cos_theta + y * sin_theta
                 ))
             )
-    
-    with open(f"angle_spec_{angle:03d}.txt", "w") as fh:
+
+    with open(f"angle_spec_{angle:03.0f}.txt", "w") as fh:
         print(fh.name)
         fh.write(f"# Spectra at {angle} deg.\n")
         fh.write("# omega scat\n")
@@ -99,4 +99,3 @@ for iangle, angle in enumerate(angle_array):
             fh.write(f"{omega:12.6f} {scat:24.12e}\n")
 
             
-
