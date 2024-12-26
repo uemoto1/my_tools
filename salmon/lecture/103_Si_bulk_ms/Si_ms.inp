@@ -64,17 +64,12 @@
 /
 
 &multiscale
-  !number of macro grids in electromagnetic analysis for x, y, and z directions
   nx_m = 8
   ny_m = 1
   nz_m = 1
-  
-  !macro grid spacing for x, y, and z directions
   hx_m = 189.036 ! 10nm
   hy_m = 189.036 ! 10nm
   hz_m = 189.036 ! 10nm
-  
-  !number of macroscopic grids for vacumm region
   nxvacl_m = 1000
   nxvacr_m = 1000
 /
