@@ -53,7 +53,7 @@ for i in range(N):
 B = np.linalg.inv(A)
 pn_list = []
 for n in range(N):
-    pn = np.dot(B[n, :], E_list)
+    pn = np.dot(B[n, :], P_list)
     pn_list.append(pn)
     # Export pn data:
     with open(f"p{n}.txt", "w") as fh:
