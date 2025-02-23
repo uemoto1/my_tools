@@ -46,8 +46,8 @@ def run2(file_input, file_output, setting):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("filelist", nargs="+")
-    parser.add_argument("--setting", default="screen", help="screen (72dpi) | ebook (150dpi) | printer (300dpi)")
-    parser.add_argument("--dpi", default=0, type=int)
+    parser.add_argument("-d", "--density", default=96, type=int, help="Default 96 dpi")
+    parser.add_argument("-s", "--setting", default="", help="screen (72dpi) | ebook (150dpi) | printer (300dpi)")
     parser.add_argument("--suffix",  default="_min")
     args = parser.parse_args()
 
@@ -55,8 +55,8 @@ if __name__ == "__main__":
         if os.path.isfile(file_input):
             name, ext = os.path.splitext(file_input)
             file_output = "%s%s.pdf" % (name, args.suffix)
-            if args.dpi > 0:
-                run1(file_input, file_output, args.dpi)
+            if not args.setting:
+                run1(file_input, file_output, args.density)
             else:
                 run2(file_input, file_output, args.setting)
         else:
