@@ -64,9 +64,19 @@ template = """
 /
 """
 
+tbl = [
+    "H", "He", "Li", "Be", "B", "C", "N", "O", "F", "Ne",
+    "Na", "Mg", "Al", "Si", "P", "S", "Cl", "Ar", 
+    "K", "Ca", "Sc", "Ti", "V", "Cr", "Mn", "Fe", "Co", "Ni", "Cu", "Zn", "Ga", "Ge", "As", "Se", "Br", "Kr", 
+    "Rb", "Sr", "Y", "Zr", "Nb", "Mo", "Tc", "Ru", "Rh", "Pd", "Ag", "Cd", "In", "Sn", "Sb", "Te", "I", "Xe", 
+    "Cs", "Ba", "La", "Ce", "Pr", "Nd", "Pm", "Sm", "Eu", "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb", 
+    "Lu", "Hf", "Ta", "W", "Re", "Os", "Ir", "Pt", "Au", "Hg", "Tl", "Pb", "Bi", "Po", "At", "Rn"
+]
+
 pseudo_tbl = {
-  "Si": {"number": 14, "file": "./Si_rps.dat", "lloc": 1, "nelec": 4},
-  "H": {"number": 1, "file": "./Si_rps.dat", "lloc": 0, "nelec": 1},
+  # "Si": {"number": 14, "file": "./Si_rps.dat", "lloc": 1, "nelec": 4},
+  # "H": {"number": 1, "file": "./Si_rps.dat", "lloc": 0, "nelec": 1},
+  e1: {"number": iz1+1, "file": f"{e1}.psp8", }
 }
 
 bohr_ang = 0.529177210903
