@@ -4,24 +4,50 @@ import os
 import argparse
 import subprocess
 
-def run(file_input, file_output, setting):
+def run1(file_input, file_output, dpi):
     subprocess.call([
         "gs",
-        "-sDEVICE=pdfwrite",
-        "-dCompatibilityLevel=1.4",
-        "-dPDFSETTINGS=/%s" % setting,
-        "-dNOPAUSE",
-        "-dQUIET",
-        "-dBATCH",
-        "-sOutputFile=%s" % file_output,
+        f"-sDEVICE=pdfwrite",
+        f"-dCompatibilityLevel=1.4",
+        f"-dNOPAUSE",
+        f"-dBATCH",
+        f"-dSAFER",
+        f"-dDownsampleColorImages=true",
+        f"-dColorImageDownsampleType=/Bicubic",
+        f"-dColorImageResolution={dpi}",
+        f"-dColorImageDownsampleThreshold=1.0",
+        f"-dDownsampleGrayImages=true",
+        f"-dGrayImageDownsampleType=/Bicubic",
+        f"-dGrayImageResolution={dpi}",
+        f"-dGrayImageDownsampleThreshold=1.0",
+        f"-dDownsampleMonoImages=true",
+        f"-dMonoImageDownsampleType=/Bicubic",
+        f"-dMonoImageResolution={dpi}",
+        f"-dMonoImageDownsampleThreshold=1.0",
+        f"-sOutputFile={file_output}",
+        file_input
+    ])
+
+def run2(file_input, file_output, setting):
+    subprocess.call([
+        f"gs",
+        f"-sDEVICE=pdfwrite",
+        f"-dCompatibilityLevel=1.4",
+        f"-dNOPAUSE",
+        f"-dBATCH",
+        f"-dSAFER",
+        f"-dPDFSETTINGS=/{setting}",
+        f"-sOutputFile={file_output}",
         file_input,
     ])
+
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("filelist", nargs="+")
-    parser.add_argument("--setting", default="screen", help="screen | ebook")
+    parser.add_argument("--setting", default="screen", help="screen (72dpi) | ebook (150dpi) | printer (300dpi)")
+    parser.add_argument("--dpi", default=0, type=int)
     parser.add_argument("--suffix",  default="_min")
     args = parser.parse_args()
 
@@ -29,6 +55,9 @@ if __name__ == "__main__":
         if os.path.isfile(file_input):
             name, ext = os.path.splitext(file_input)
             file_output = "%s%s.pdf" % (name, args.suffix)
-            run(file_input, file_output, args.setting)
+            if args.dpi > 0:
+                run1(file_input, file_output, args.dpi)
+            else:
+                run2(file_input, file_output, args.setting)
         else:
             sys.stderr.write(f"ERROR: {file_input} is not found!\n")
