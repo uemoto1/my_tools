@@ -1,5 +1,6 @@
 import argparse
 import qrcode
+from PIL import Image
 
 ap = argparse.ArgumentParser()
 ap.add_argument("-s", "--ssid", required=True, help="SSID of the Wi-Fi network")
