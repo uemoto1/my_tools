@@ -1,21 +1,21 @@
 #### DO NOT CHANGE FOLLOWING BLOCK ####
 import math
 import bpy
+import mathutils
 
 bpy.ops.object.select_all(action='SELECT')
 bpy.ops.object.delete(use_global=False)
 
-def create_shape(name, shape, x, y, z, material, **kwargs):
-    if shape == "sphere":
-        bpy.ops.mesh.primitive_uv_sphere_add(location=(x, y, z), **kwargs)
-    elif shape == "cube":
-        bpy.ops.mesh.primitive_cube_add(location=(x, y, z), **kwargs)
-    elif shape == "cylinder":
-        bpy.ops.mesh.primitive_cylinder_add(location=(x, y, z), **kwargs)
-    elif shape == "cone":
-        bpy.ops.mesh.primitive_cone_add(location=(x, y, z), **kwargs)
-    elif shape == "plane":
-        bpy.ops.mesh.primitive_plane_add(location=(x, y, z), **kwargs)
+def create_shape(name, shape, x, y, z, material, **params):
+    function = {
+        "sphere": bpy.ops.mesh.primitive_uv_sphere_add,
+        "cube": bpy.ops.mesh.primitive_cube_add,
+        "cylinder": bpy.ops.mesh.primitive_cylinder_add,
+        "cone": bpy.ops.mesh.primitive_cone_add,
+        "plane": bpy.ops.mesh.primitive_plane_add,
+    }
+    if shape in function:
+        function[shape](location=(x, y, z), **params)
     else:
         raise ValueError(f"{shape} is not supported!")
     obj = bpy.context.active_object
@@ -23,8 +23,8 @@ def create_shape(name, shape, x, y, z, material, **kwargs):
     obj.data.materials.append(material)
     return obj
 
-def create_material(name, r, g, b, alpha=1.0, roughness=0.5, metallic=0.1, **kwargs):
-    material = bpy.data.materials.new(name, **kwargs)
+def create_material(name, r, g, b, alpha=1.0, roughness=0.5, metallic=0.1, **params):
+    material = bpy.data.materials.new(name, **params)
     material.use_nodes = True
     bsdf = material.node_tree.nodes["Principled BSDF"]
     bsdf.inputs["Base Color"].default_value = (r, g, b, alpha)
@@ -32,26 +32,34 @@ def create_material(name, r, g, b, alpha=1.0, roughness=0.5, metallic=0.1, **kwa
     bsdf.inputs["Metallic"].default_value = metallic
     return material
 
-def create_light(name, x, y, z, energy=1.0, **kwargs):
-    light_data = bpy.data.lights.new(name, **kwargs)
+def create_light(name, x, y, z, energy=1.0, **params):
+    light_data = bpy.data.lights.new(name, type="POINT",**params)
     light_data.energy = energy
     light = bpy.data.objects.new(name, light_data)
     light.location = (x, y, z)
     bpy.context.collection.objects.link(light)
     return light
 
-def create_camera(name, x, y, z, **kwargs):
-    camera_data = bpy.data.cameras.new(name, **kwargs) 
+def create_camera(name, x, y, z, **params):
+    camera_data = bpy.data.cameras.new(name, **params) 
     camera = bpy.data.objects.new(name, camera_data)
     camera.location = (x, y, z)
     bpy.context.collection.objects.link(camera)
     return camera
 
+def rotate_at(obj, target, track="-Z", up="Y"):
+    direction = mathutils.Vector(target) - obj.location
+    rot_quat = direction.to_track_quat(track, up)
+    obj.rotation_euler = rot_quat.to_euler()
+
 #### DO NOT CHANGE ABOVE BLOCK ####
 
 red1 = create_material("red1", 1.0, 0.0, 0.0)
-sphere1 = create_shape("sphere1", "sphere", 0.0, 0.0, 0.0, red1, radius=1.0)
+
+for i in range(10):
+    x = 2.0 * (i - 5.0)
+    sphere = create_shape(f"sphere{i}", "sphere", x, 0.0, 0.0, red1)
+
 camera1 = create_camera("camera1", 0.0, 0.0, 10.0)
 light1 = create_light("light1", 0.0, 0.0, 15.0, energy=10.0)
-
 
