@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import argparse
 import scipy.optimize
 import shutil
@@ -18,7 +19,7 @@ args = parser.parse_args()
 if not (args.a or args.b or args.c):
     sys.exit(-1)
 
-log = open("opt.log", "w")
+log = open(os.path.splitext(__file__)[0] + ".log", "w")
 
 icount = 0
 
@@ -37,24 +38,23 @@ def func(var):
     state = ""
     if args.a:
         a = var_list.pop(0)
-        state += f"|a|={a:12.6f}, "
+        state += f"|a|={a:.9e}, "
         vec_a = vec_a / np.linalg.norm(vec_a) * a
     if args.b:
         b = var_list.pop(0)
-        state += f"|b|={b:12.6f}, "
+        state += f"|b|={b:.9f}, "
         vec_b = vec_b / np.linalg.norm(vec_b) * b
     if args.c:
         c = var_list.pop(0)
-        state += f"|c|={c:12.6f}, "
+        state += f"|c|={c:.9e}, "
         vec_c = vec_c / np.linalg.norm(vec_c) * c
-    # Write POSCAR file
     # Write POSCAR file
     with open("POSCAR", "w") as fh:
         fh.write(poscar[0])
         fh.write(poscar[1])
-        fh.write("%12.6f %12.6f %12.6f\n" % tuple(vec_a))
-        fh.write("%12.6f %12.6f %12.6f\n" % tuple(vec_b))
-        fh.write("%12.6f %12.6f %12.6f\n" % tuple(vec_c))
+        fh.write("%f %f %f\n" % tuple(vec_a))
+        fh.write("%f %f %f\n" % tuple(vec_b))
+        fh.write("%f %f %f\n" % tuple(vec_c))
         fh.writelines(poscar[5:])
     # Execute VASP
     subprocess.run(args.command)
