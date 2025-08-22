@@ -1,146 +1,133 @@
-# OverleafからarXivへのアップロード手順について
+# OverleafからarXivへのアップロード手順
 
-## arXivの新規アカウントを作成
+## arXivのアカウント作成（初回のみ）
 
-投稿のためにはまずアカウントが必要, はじめてarXivに投稿する場合は下記の手順でアカウント作成から開始.
+論文を投稿するにはアカウントが必要です。初めてarXivを利用する場合は、以下の手順でアカウントを作成してください。
 
-1. arXivのウェブサイトを開く \
-https://arxiv.org
+1. [arXivのウェブサイト](https://arxiv.org) を開く
+1. ページ右上の **`login`** リンクをクリック
+1. ページ下部の **`If you've never logged ...`** にある **`Register ...`** ボタンをクリック
+1. フォームに入力
+   - `Email:` 大学のメールアドレス（stu.kobe-u.ac.jpのもの）
+   - `Username:` と `Password:` は覚えやすいものを設定
+1. `next` ボタンで次へ進む
+1. `I certify ...` にチェックを入れ、`submit` ボタンをクリック
+1. 登録確認メールが届くので、受信を確認
 
-1. ページ右上の`login`リンクをクリック
 
-1. ページ下側の`If you've never logged 略`にある`Register 略`ボタンをクリック
+## Overleafからソースファイルを取得
 
-1. フォームに記入する
-    - `Email:` 大学のメールアドレス (stu.kobe-u.ac.jpのほう)
-    - `Username:` , `Password:`  覚えやすいものをつけておく
+1. [Overleaf](https://ja.overleaf.com/) のプロジェクトページを開く
+1. ページ右上の **`メニュー`** ボタンをクリック
+1. **`ソース`** を選んでLaTeXソースをダウンロード
+1. ダウンロードしたzipファイルを展開
+   - Mac: ダブルクリックで自動展開
+   - Windows: 右クリック → `すべて展開`
 
-1. `next`ボタンで次のページに移動
 
-1. `I certify 略`にチェックを入れ, `submit`ボタンをクリック
+## 投稿用ファイルの準備
 
-1. メールが届くので受信できるか確認
+### 公開時の注意点
 
-## Overleafからソースファイルを入手
+- arXivにはLaTeXソース一式をまとめた圧縮ファイルをアップロードします。arXiv側でコンパイルされ、PDFが公開されます。
+- 必要なファイル：
+  - 本文 `ms.tex`
+  - 補足資料（任意） `supplement.tex`
+  - 図や表などの画像ファイル
+  - その他必要なスタイルファイル等
+- **重要:** arXivではコンパイル済みPDFだけでなく、LaTeXソース一式も公開されます。
+  → コメントや不要ファイル（未使用のグラフなど）、加工中の下書きなども閲覧可能になるので、必ず削除してください。
 
-1. [Overleaf](https://ja.overleaf.com/) にあるプロジェクトページを開く
-
-1. ページ右上の`メニュー`ボタンをクリック
-
-1. `ソース`ボタンをクリックしてLaTeXソースをダウンロード
-
-1. ダウンロード済みのzipファイルを開く
-    - Macの場合はダブルクリックで自動で展開
-    - Windowsの場合は右クリックのメニューから`すべて展開`で圧縮ファイルを展開
-
-## 投稿用の原稿ファイルの加工
-
-### arXiv公開の注意点
-
-- arXivにLaTeXソース一式をまとめた圧縮ファイル(zipなど)を投稿するとコンパイルされてpdfをWeb公開
-
-- ソースコード`ms.tex`（本文）と`supplement.tex`（付属資料・任意）、画像ファイル、その他の必須ファイルを含める
-
-- arXivでのコンパイルにはpdflatex(およびbibtex)を使うため, 同じ環境で動作するか事前確認の必要
-
-- **arXivではコンパイル済みPDFだけでなくLaTeXのソースファイル一式がWebで公開される**ので、ソースコード中のコメント、編集中の画像ファイルも丸見えになる (**不要なデータは手作業で削除する！**)
 
 ### 加工手順
 
-1. 本文のLaTeXソースファイルは`ms.tex`というファイル名に変更
+1. 本文のLaTeXファイルを `ms.tex` にリネーム
+1. 補足資料がある場合は `supplement.tex` にリネームして同封
+1. 不要なファイルを削除
+   - 使っていないソースや画像ファイル
+   - 下書き、メモ、議論資料
+   - 中間データ
+   - 雑誌テンプレート
+   - Macの場合の `.DS_Store` (Finder の隠しファイル)
+   - **外部に公開したくないデータが残っていないか要確認**
+1. ソース中のコメント（`%`以降）は削除
 
-1. (資料を付属する場合は`supplement.tex`というファイル名に変更して同封)
+### ソースのコンパイル確認
 
-1. 不要なファイルの削除
-    - 使っていないソースファイル
-    - 使っていない画像ファイル
-    - 下書きやメモ、議論用の資料
-    - 途中計算データ
-    - 雑誌テンプレート
-    - (Macの場合は`.DS_Store`というFinderの隠しファイル)
-    - **ほか流出するとまずいものが残っていないかよく確認！**
+arXivでのコンパイルには`pdflatex`(および`bibtex`)を使うため, 同じ環境で動作するか事前確認の必要
 
-1. ソースコード中のコメント(`%`で始まるものを行末まで削除)
+```bash
+pdflatex ms.tex
+bibtex ms.tex   # 使っているなら
+pdflatex ms.tex
+pdflatex ms.tex   # 参照エラー防止のため 2 回実行
+```
 
-1. `pdflatex`で`ms.tex`のコンパイルを試す
-    - `$ pdflatex ms.tex`
-    - `$ bibtex ms.tex` \
-    (もしbibtexを使っている場合は必要)
-    - `$ pdflatex ms.tex`\
-     (参照エラーを防ぐため１〜２回実行)
-    - 資料が付属する場合は`supplement.tex`についても同様にテスト
-    - 出来上がったpdfファイルをチェックしてエラーが無いことを確認
-        - 図・表・数式番号などの参照エラー、文献番号が一致しないエラーなどが多い
+* `ms.pdf` が生成され、エラーが出なければ OK
+* 付属資料がある場合は同様に `supplement.tex` をコンパイル
 
-1. 先程のコンパイル時に生成されたファイルから不要なものを削除, **拡張子`.bbl`ファイルは残すこと**(arXivでのコンパイルに必要)
-    - `ms.pdf`（および`supplement.pdf`）コンパイル後のpdfファイル
-    - `略.log`, `略.aux`, `略.out`, `略Nodes.bib` 一時ファイルなので削除
-    - `略-eps-converted-to.pdf` (epsファイルを画像に使う場合)
-        - 旧バージョンの投稿システムでは`-eps-converted-to.pdf`を使うため残しておく必要あり
 
-1. 上記のファイルが入ったフォルダを圧縮
+### 生成ファイルの整理
 
-## arXivへのアップロード
+| ファイル | 詳細 | 処理 |
+|---|---|---|
+| `ms.pdf` | コンパイル済みPDF | 削除(**コピーを手元に保管**) |
+| `*.log`, `*.aux`, `*.out` | コンパイル時に作成される一時ファイル | 削除 |
+| `*.bbl` | BibTeX の出力 | **残す**（arXiv で再コンパイルする際に必要） |
+| `*-eps-converted-to.pdf` | EPS を PDF に変換したファイル | 旧システムで必要なら残す |
 
-1. [arXiv](https://arxiv.org/)のウェブサイトにアクセス
+### **チェックリスト**
+-  コンパイル済みPDFのコピーを閲覧し、図・表・数式・文献番号にエラーがないか確認
+-  ファイル名に「draft」「temp」「tmp」などのキーワードが入っていないか確認
+-  **残すべきファイル**：`ms.tex`・`supplement.tex`・`.bbl`（BibTeX で生成した場合）と画像ファイル一式が残っているか確認
 
-1. 右上の`login`リンクをクリック、アカウントとパスワードを入力しログイン
+### ZIP ファイルを作る
 
-1. `Start Submission`ボタンをクリック
+1. 上記で残したファイルだけをまとめる
+2. フォルダ全体を右クリック → 「圧縮」
+3. ZIP ファイル名は「arxiv_submission.zip」など分かりやすく
 
-1. `Verify Your Contact Information`で自分の所属情報を確認
+
+## arXiv へのアップロード
+
+1.  arXiv トップページ（[https://arxiv.org](https://arxiv.org)）にアクセス
+2.  右上の **login** でログイン
+3.  **Start Submission** をクリック
+4.  **Verify Your Contact Information** で情報を確認、必要に応じて **Change User Information**
     - 未入力か変更がある場合は`Change User Information`を選択
         - `First Name`,`Last Name` は最低限必要
-        - `Affiliation`
-            - 神戸大小野研の大学院生の場合は`Department of Electrical and Electronic Engineering, Graduate School of Engineering, Kobe University`
-    - 問題ない場合は`I certify 略`をチェック
+        - `Affiliation`は神戸大工学部電気電子の大学院生の場合 \
+        `Department of Electrical and Electronic Engineering, Graduate School of Engineering, Kobe University`
+5.  **I certify** のチェックボックスにチェック
+6.  **Submission Agreement** の **By submitting** をチェック、下までスクロールして **Accept**
+7.  **Authorship** で `I am submitting as an author of this article` を選択
+8.  **License Statement** で（特に理由がなければ）`arXiv.org perpetual, non‑exclusive license` を選択
+    - 研究テーマや共同研究先によっては別の選択肢が必要になる可能性あり
+9.  **Archive and Subject Class** で分野を選択（以下はテーマごとの例）
+    - プログラム開発系: `Physics > Computational Physics`
+    - 材料・デバイス応用:
+        - `Condensed Matter > Mesoscale & Nanoscale Physics`
+        - `Condensed Matter > Material Physics`
+        - `Physics > Applied Physics`
+    - 量子情報: `Quantum Physics`
+10.  **Prepare Files** で ZIP ファイルをアップロード
+    - エラーが出たらファイルを修正し、**Delete All** で再アップロード
+11.  **Check Files** ボタンでファイルを確認
+12.  問題がなければ **Accept and Continue**
+13.  **Preview your PDF** で自動コンパイル結果を確認
+    - PDF が正しく表示されるかチェック（ **手元のコンパイル済みpdfファイルと比較しし式や図表番号、文献番号、フォーマットに問題がないかよく確認する** ）
+14.  メタデータ入力
+    - Title, Author(s), Abstract は論文原稿の表記を正確に
+    - Comments にページ数・図数などを記入
+15.  **Check your submission** で最終確認、文字の大文字・小文字**
+    - 記号・上付き・下付き
+    - 章・節の見出し
+    - PDF をダウンロードして最終確認
+16.  **Submit** をクリック
+17.  登録メールに送信完了通知が届く、公開まで 1〜2 日（休日は除く）
 
-1. `Submission Agreement`にある`By submitting 略`をチェック
-    - 注意書きが表示されるので一番下までスクロールで読み`Accept and return to Submission`ボタンをクリック
+### **重要**
+- PDF のレイアウトや内容に問題があると、再提出を求められることがあります。
+- 途中で **「投稿内容の差し替えは X 日まで可能」** と表示される場合があります。期限を確認しておきましょう。
 
-1. `Authorship`で著者種別を選択
-    - 通常は`I am submitting as an author of this article`（投稿者自身が論文の著者）を選択
 
-1. `License Statement`で著作権ライセンスを選択
-    - 特にこだわり(or 縛り)がなければ`arXiv.org perpetual, non-exclusive license`
-    - 共同研究だと相手方やプロジェクト次第で選択できないものがあるかも（要確認）
-
-1. `Archive and Subject Class`で分野を選択する（小野研の関連研究であれば下記のものが候補？）
-    - プログラム開発関係
-        - `Physics` > `Computational Physics` 
-    - デバイス材料応用関係：
-        - `Condensed Matter` > `Mesoscale & Nanoscale Physics` 
-        - `Condensed Matter` > `Material Physics` 
-        - `Physics` > `Applied Physics`
-    - 量子情報処理関係
-        - `Quantum Physics`
-
-1. `Prepare Files`から先程作成した圧縮ファイルを選択し`upload`ボタンをクリック
-    - エラーが発生した場合は原稿ファイルを適宜修正する, `Delete All`でアップロード済みファイルを消去した上で再度アップロード
-
-1. `Check Files`ボタンを押してファイルをチェックする
-
-1. 問題がなければ`Accept and Continue`ボタンをクリック
-
-1. 正常にコンパイルができれば`Submission Processing`の`Preview your PDF`ボタンでファイルをチェックできる
-    - **内容に問題がないか確認すること！**
-
-1. メタデータの入力
-    - `Title`, `Author(s)`, `Abstract`は論文原稿の表記を正確にコピー
-    - `Comments`はページ数や画像ファイル数を記入
-        * 例: `10 pages, 5 figures`
-    - 他の欄は記入不要
-
-1. `Check your submission`で投稿前の最終確認
-    - `Preview Abstract`タイトル、著者リスト、アブストラクトに間違いはないか
-        - 大文字・小文字などは論文本文とまったく同じか？
-        - 記号、上付き・下付きの添字、数式に誤りはないか？
-        - おかしなところで段落が変わっていないか？
-    - `Preview Document`でPDFファイルをダウンロードして内容をチェック
-        - （ダウンロードしたファイルは手元に残しておくこと）
-
-1. `Submit`ボタンをクリック
-
-1. メールが届くので確認
-    - arXiv側で内容の簡易チェックが行われ, 通常は投稿から公開まで１〜２日程度必要（休日は除く）
-    - **公開予定日時と原稿差し替えのタイムリミットを要確認！**
