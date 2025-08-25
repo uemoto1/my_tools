@@ -6,10 +6,11 @@ potential = mace.calculators.mace_mp(
     device="cuda",              # or "cpu"
     default_dtype="float64",
 )
-atoms = ase.io.read("POSCAR") 
+atoms = ase.io.read("input.cif") 
 atoms.calc = potential
 dyn = ase.optimize.BFGS(atoms)
 dyn.run(fmax=0.01)
 
-ase.io.write("CONTCAR", atoms)
+ase.io.write("output.cif", atoms)
+# ase.io.write("CONTCAR", atoms, sort=True)
 

@@ -1,14 +1,5 @@
-import ase.io
-import mace.calculators 
+atoms = ase.io.read("ファイル名")
 
-potential = mace.calculators.mace_mp(
-    model="medium-mpa-0",       # MACE-MPA0
-    device="cuda",              # or "cpu"
-    default_dtype="float64",    # or float32
-)
-atoms = ase.io.read("POSCAR") 
-atoms.calc = potential
 
-energy = atoms.get_potential_energy()
 
-print(f"Total energy = {energy} [eV]")
+

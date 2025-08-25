@@ -4,7 +4,7 @@ import mace.calculators
 potential = mace.calculators.mace_mp(
     model="medium-mpa-0", device="cuda", default_dtype="float32"
 )
-atoms = ase.io.read("POSCAR")
+atoms = ase.io.read("input.cif")
 atoms.calc = potential
 dyn = ase.md.npt.NPT(
     atoms,
@@ -14,8 +14,7 @@ dyn = ase.md.npt.NPT(
     ttime=25.0*ase.units.fs,
     logfile="md.txt",
     trajectory="md.traj",
-    loginterval=20
+    loginterval=25
 )
-dyn.run(200)
-ase.io.write("CONTCAR", atoms)
-
+dyn.run(250)
+ase.io.write("output.cif", atoms)
