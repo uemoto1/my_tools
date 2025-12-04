@@ -8,6 +8,7 @@ parser.add_argument("-y", "--ylim", default="0,1", type=str, help="Range of y")
 parser.add_argument("-c", "--color", default="k", type=str, help="color")
 parser.add_argument("-w", "--width", default=2.0, type=float, help="width")
 parser.add_argument("-n", "--nsample", default=100, type=int, help="sampling")
+parser.add_argument("-o", "--output", default="", type=str, help="output file")
 args = parser.parse_args()
 
 xmin, xmax = [float(r) for r in args.xlim.split(",")]
@@ -45,4 +46,7 @@ for eq in args.eqlist:
         continue
     plot(x, y, color=args.color, linewidth=args.width)
 
-show()
+if args.output:
+    savefig(args.output, transparent=True)
+else:
+    show()
