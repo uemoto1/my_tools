@@ -11,9 +11,6 @@ print("# ISPIN = %s" % ISPIN)
 NBANDS = int(root.find(".//i[@name='NBANDS']").text)
 print("# NBANDS = %d" % NBANDS)
 
-efermi = float(root.find(".//i[@name='efermi']").text)
-print("# efermi = %f" % efermi)
-
 elem_rec_basis = root.find(".//varray[@name='rec_basis']")
 vec_b1 = np.fromstring(elem_rec_basis[0].text, sep=" ", dtype=float)
 vec_b2 = np.fromstring(elem_rec_basis[1].text, sep=" ", dtype=float)
@@ -60,11 +57,35 @@ for js in range(ISPIN):
 print("# Writing output files ...")
 tmp = np.zeros([num_kpoint, 1+NBANDS])
 for js in range(ISPIN):
-    name = "band_ef0_spin%d.txt" % (js+1)
+    name = "band_spin%d.txt" % (js+1)
     print(name)
     tmp[:, 0] = xlist
-    tmp[:, 1:] = dat[js, :, :, 0] - efermi
-    np.savetxt(name, tmp, header="row(kpoint) col(klength, eigen)", fmt="%.6f")
+    tmp[:, 1:] = dat[js, :, :, 0]
+    np.savetxt(name, tmp, header="klen, eigenvalues ...", fmt="%.6f")
 
+divisions = int(root.find(".//i[@name='divisions']").text)
+print("# divisions = %d" % divisions)
+
+print("# Extracting kpoint labels ...")
+buf = {}
+elem_kpoints_labels= root.find(".//kpoints_labels")
+for tmp in elem_kpoints_labels:
+    i = int(tmp.text)
+    label = tmp.attrib["name"].strip()
+    print("# %d: %s" % (i, label))
+    if label:
+        nseg = int((i - 1) / 2)
+        iseg = (i - 1) % 2
+        if iseg == 0:
+            n = divisions * nseg
+        else:
+            n = divisions * (nseg + 1) - 1
+        buf[xlist[n]] = (kpointlist[n], label)
+
+with open("kpoint_labels.txt", "wt") as fh:
+    print(fh.name)
+    fh.write(f"# klen, kx, ky, kz, label\n")
+    for x, ((kx, ky, kz), label) in buf.items():
+        fh.write(f"{x:12.6f} {kx:+.6f} {kz:+.6f} {ky:+.6f} {label}\n")
 
 
