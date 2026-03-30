@@ -3,18 +3,18 @@
 e_fermi =   -1.8209   # Modify Fermi energy
 e_range_min = None
 e_range_max = None
-ispin = 1 # 1 or 2
+ispin = 1    # 1 or 2
 # Specify target ion and orbits:
-# "s", "py", "pz", "px", "dyz", "dxy", "dz2", "dxz", "x2-y2"
+# (orbits: "s", "py", "pz", "px", "dyz", "dxy", "dz2", "dxz", "x2-y2")
 target_list = [
     # (number, orbit),
     (1, "px"),
     (1, "py"),
     (1, "s"),
 ]
-color = "red"
-d_scale = 10.0
+d_scale = 30.0
 d_step = 2
+marker_color = "red"
 output = "band_proj.png"
 
 ################################################################################
@@ -29,7 +29,7 @@ kpoint_labels = np.loadtxt("kpoint_labels.txt", dtype="str")
 tmp = []
 for i, orbit in target_list:
     tmp.append(np.loadtxt(f"proj/ion{i:03d}_{orbit}_spin{ispin}.txt"))
-proj = sum(tmp)
+proj = sum(tmp) * (1.0 / len(target_list))
 
 plt.figure(figsize=[5, 5], dpi=144)
 
@@ -39,7 +39,7 @@ for i in range(band.shape[1]-1):
 
 for ik in range(0, band.shape[0], d_step):
     for i in range(band.shape[1]-1):
-        plt.plot(band[ik, 0], band[ik, i+1] - e_fermi, ".", ms=proj[ik, i]*d_scale, color=color)
+        plt.plot(band[ik, 0], band[ik, i+1] - e_fermi, ".", ms=proj[ik, i]*d_scale, color=marker_color)
 
 plt.xlim([band[0, 0], band[-1, 0]])
 plt.xlabel("Wavenumber $k$")
@@ -61,3 +61,4 @@ plt.tight_layout()
 plt.savefig(output)
 print(f"# Generate {output}")
 plt.show()
+
