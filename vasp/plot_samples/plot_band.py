@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
-e_fermi =   -1.0209   # Modify Fermi energy
-e_range_min = None
-e_range_max = None
+e_fermi =   -1.8209   # Modify Fermi energy
+e_range_min = None    # Lower bound of y axis
+e_range_max = None    # Upper bound of y axis
 output = "band.png"
 
 import numpy as np
@@ -12,6 +12,9 @@ band_spin1 = np.loadtxt("band_spin1.txt")
 # band_spin2 = np.loadtxt("band_spin2.txt")
 kpoint_labels = np.loadtxt("kpoint_labels.txt", dtype="str")
 
+if e_range_max is None:
+    e_range_max = min(band_spin1[:, -1]) - e_fermi
+
 plt.figure(figsize=[5, 5], dpi=144)
 
 for n in range(1, band_spin1.shape[1]):
@@ -20,11 +23,6 @@ for n in range(1, band_spin1.shape[1]):
 
 plt.xlim([band_spin1[0, 0], band_spin1[-1, 0]])
 plt.xlabel("Wavenumber $k$")
-
-if e_range_min is None:
-    e_range_min = min(band_spin1[:, 1]) - e_fermi - 1.0
-if e_range_max is None:
-    e_range_max = min(band_spin1[:, -1]) - e_fermi
 
 plt.ylim([e_range_min, e_range_max])
 plt.ylabel("Energy $E-E_F$ (eV)")
@@ -38,3 +36,4 @@ plt.tight_layout()
 plt.savefig(output)
 print(f"# Generate {output}")
 plt.show()
+
