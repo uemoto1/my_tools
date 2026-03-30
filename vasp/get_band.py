@@ -54,19 +54,9 @@ for js in range(ISPIN):
             buf.append(tmp)
         dat[js, jk, :, :] = buf
 
-print("# Writing output files ...")
-tmp = np.zeros([num_kpoint, 1+NBANDS])
-for js in range(ISPIN):
-    name = "band_spin%d.txt" % (js+1)
-    print(name)
-    tmp[:, 0] = xlist
-    tmp[:, 1:] = dat[js, :, :, 0]
-    np.savetxt(name, tmp, header="klen, eigenvalues ...", fmt="%.6f")
-
+print("# Extracting kpoint labels ...")
 divisions = int(root.find(".//i[@name='divisions']").text)
 print("# divisions = %d" % divisions)
-
-print("# Extracting kpoint labels ...")
 buf = {}
 elem_kpoints_labels= root.find(".//kpoints_labels")
 for tmp in elem_kpoints_labels:
@@ -82,10 +72,18 @@ for tmp in elem_kpoints_labels:
             n = divisions * (nseg + 1) - 1
         buf[xlist[n]] = (kpointlist[n], label)
 
+print("# Writing output files ...")
+tmp = np.zeros([num_kpoint, 1+NBANDS])
+for js in range(ISPIN):
+    name = "band_spin%d.txt" % (js+1)
+    print(name)
+    tmp[:, 0] = xlist
+    tmp[:, 1:] = dat[js, :, :, 0]
+    np.savetxt(name, tmp, header="klen, eigenvalues ...", fmt="%.6f")
+
 with open("kpoint_labels.txt", "wt") as fh:
     print(fh.name)
     fh.write(f"# klen, kx, ky, kz, label\n")
     for x, ((kx, ky, kz), label) in buf.items():
         fh.write(f"{x:12.6f} {kx:+.6f} {kz:+.6f} {ky:+.6f} {label}\n")
-
 
