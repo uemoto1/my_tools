@@ -12,9 +12,10 @@ target_list = [
     (1, "py"),
     (1, "s"),
 ]
-d_scale = 30.0
-d_step = 2
-marker_color = "red"
+dot_scale = 30.0
+dot_step = 2
+dot_color = "red"
+curve_color = "gray"
 output = "band_proj.png"
 
 ################################################################################
@@ -25,6 +26,9 @@ import matplotlib.pyplot as plt
 band = np.loadtxt(f"band_spin{ispin}.txt")
 kpoint_labels = np.loadtxt("kpoint_labels.txt", dtype="str")
 
+if e_range_max is None:
+    e_range_max = min(band[:, -1]) - e_fermi
+
 # Calculate sum of projections over specified target orbitals ...
 tmp = []
 for i, orbit in target_list:
@@ -34,20 +38,15 @@ proj = sum(tmp) * (1.0 / len(target_list))
 plt.figure(figsize=[5, 5], dpi=144)
 
 for i in range(band.shape[1]-1):
-    plt.plot(band[:, 0], band[:, i+1] - e_fermi, "-", color="gray")
+    plt.plot(band[:, 0], band[:, i+1] - e_fermi, "-", color=curve_color)
 
 
-for ik in range(0, band.shape[0], d_step):
+for ik in range(0, band.shape[0], dot_step):
     for i in range(band.shape[1]-1):
-        plt.plot(band[ik, 0], band[ik, i+1] - e_fermi, ".", ms=proj[ik, i]*d_scale, color=marker_color)
+        plt.plot(band[ik, 0], band[ik, i+1] - e_fermi, ".", ms=proj[ik, i]*dot_scale, color=dot_color)
 
 plt.xlim([band[0, 0], band[-1, 0]])
 plt.xlabel("Wavenumber $k$")
-
-if e_range_min is None:
-    e_range_min = min(band[:, 1]) - e_fermi - 1.0
-if e_range_max is None:
-    e_range_max = min(band[:, -1]) - e_fermi
 
 plt.ylim([e_range_min, e_range_max])
 plt.ylabel("Energy $E-E_F$ (eV)")
