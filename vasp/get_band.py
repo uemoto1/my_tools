@@ -79,11 +79,11 @@ for js in range(ISPIN):
     print(name)
     tmp[:, 0] = xlist
     tmp[:, 1:] = dat[js, :, :, 0]
-    np.savetxt(name, tmp, header="klen, eigenvalues ...", fmt="%.6f")
+    np.savetxt(name, tmp, header="klen, eigenvalues ...", fmt="%10.4f")
 
 with open("kpoint_labels.txt", "wt") as fh:
     print(fh.name)
     fh.write(f"# klen, kx, ky, kz, label\n")
     for x, ((kx, ky, kz), label) in buf.items():
-        fh.write(f"{x:12.6f} {kx:+.6f} {kz:+.6f} {ky:+.6f} {label}\n")
+        fh.write(f"{x:10.8f} {kx:10.8f} {kz:10.8f} {ky:10.8f} {label}\n")
 
