@@ -19,7 +19,12 @@ print("# vec_b1 = (%+.3f, %+.3f, %+.3f)" % tuple(vec_b1))
 print("# vec_b2 = (%+.3f, %+.3f, %+.3f)" % tuple(vec_b2))
 print("# vec_b3 = (%+.3f, %+.3f, %+.3f)" % tuple(vec_b3))
 
-elem_kpointlist = root.find(".//varray[@name='kpointlist']")
+elem_eigenopt = root.find(".//eigenvalues_kpoints_opt")
+if elem_eigenopt is not None:
+    elem_kpointlist = elem_eigenopt.find(".//varray[@name='kpointlist']")
+else:
+    elem_kpointlist = root.find(".//varray[@name='kpointlist']")
+
 kpointlist = []
 for tmp in elem_kpointlist:
     kpoint = np.fromstring(tmp.text, sep=" ", dtype=float)
