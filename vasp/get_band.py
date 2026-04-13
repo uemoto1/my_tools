@@ -22,8 +22,10 @@ print("# vec_b3 = (%+.3f, %+.3f, %+.3f)" % tuple(vec_b3))
 elem_eigenopt = root.find(".//eigenvalues_kpoints_opt")
 if elem_eigenopt is not None:
     elem_kpointlist = elem_eigenopt.find(".//varray[@name='kpointlist']")
+    elem_set = elem_eigenopt.find(".//eigenvalues/array/set")
 else:
     elem_kpointlist = root.find(".//varray[@name='kpointlist']")
+    elem_set = root.find("./calculation/eigenvalues/array/set")
 
 kpointlist = []
 for tmp in elem_kpointlist:
@@ -48,7 +50,7 @@ for jk in range(num_kpoint):
 
 print("# Extracting eigenenergy ...")
 dat = np.zeros([ISPIN, num_kpoint, NBANDS, 1+1])
-elem_set = root.find("./calculation/eigenvalues/array/set")
+
 for js in range(ISPIN):
     elem_set_spin = elem_set.find("./set[@comment='spin %d']" % (js+1))
     for jk in range(num_kpoint):
@@ -71,7 +73,6 @@ for js in range(ISPIN):
 print("# Extracting kpoint labels ...")
 buf = {}
 elem_kpoints_labels= root.find(".//kpoints_labels")
-
 if elem_kpoints_labels is None:
     import sys
     print("WARNING: kpoints_labels is not found!", file=sys.stderr)
@@ -79,7 +80,6 @@ if elem_kpoints_labels is None:
 
 divisions = int(root.find(".//i[@name='divisions']").text)
 print("# divisions = %d" % divisions)
-
 for tmp in elem_kpoints_labels:
     i = int(tmp.text)
     label = tmp.attrib["name"].strip()
@@ -98,4 +98,6 @@ with open("kpoint_labels.txt", "wt") as fh:
     fh.write(f"# klen, kx, ky, kz, label\n")
     for x, ((kx, ky, kz), label) in buf.items():
         fh.write(f"{x:10.8f} {kx:10.8f} {kz:10.8f} {ky:10.8f} {label}\n")
+
+
 
