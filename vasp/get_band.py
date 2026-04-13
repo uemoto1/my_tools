@@ -54,11 +54,27 @@ for js in range(ISPIN):
             buf.append(tmp)
         dat[js, jk, :, :] = buf
 
+print("# Writing output files ...")
+tmp = np.zeros([num_kpoint, 1+NBANDS])
+for js in range(ISPIN):
+    name = "band_spin%d.txt" % (js+1)
+    print(name)
+    tmp[:, 0] = xlist
+    tmp[:, 1:] = dat[js, :, :, 0]
+    np.savetxt(name, tmp, header="klen, eigenvalues ...", fmt="%10.4f")
+
 print("# Extracting kpoint labels ...")
-divisions = int(root.find(".//i[@name='divisions']").text)
-print("# divisions = %d" % divisions)
 buf = {}
 elem_kpoints_labels= root.find(".//kpoints_labels")
+
+if elem_kpoints_labels is None:
+    import sys
+    print("WARNING: kpoints_labels is not found!", file=sys.stderr)
+    sys.exit(1)
+
+divisions = int(root.find(".//i[@name='divisions']").text)
+print("# divisions = %d" % divisions)
+
 for tmp in elem_kpoints_labels:
     i = int(tmp.text)
     label = tmp.attrib["name"].strip()
@@ -71,15 +87,6 @@ for tmp in elem_kpoints_labels:
         else:
             n = divisions * (nseg + 1) - 1
         buf[xlist[n]] = (kpointlist[n], label)
-
-print("# Writing output files ...")
-tmp = np.zeros([num_kpoint, 1+NBANDS])
-for js in range(ISPIN):
-    name = "band_spin%d.txt" % (js+1)
-    print(name)
-    tmp[:, 0] = xlist
-    tmp[:, 1:] = dat[js, :, :, 0]
-    np.savetxt(name, tmp, header="klen, eigenvalues ...", fmt="%10.4f")
 
 with open("kpoint_labels.txt", "wt") as fh:
     print(fh.name)
