@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 import sys
-import fitz  # PyMuPDF
 import collections
 import re
+import tempfile
+
+import fitz  # PyMuPDF
+
 
 def extract_annotations(pdf_path):
     doc = fitz.open(pdf_path)
@@ -18,12 +21,9 @@ def extract_annotations(pdf_path):
             # annot.info には title(作成者), content(本文), subject, creationDate, modDate などが入る場合があります
             item = {
                 "author": info.get("title"),
-                "content": info.get("content"),  # 付箋本文など
-                # "creationDate": info.get("creationDate"),
-                # "modDate": info.get("modDate"),
-                "rect": list(annot.rect),        # 注釈の位置
+                "content": info.get("content"),  
+                "rect": list(annot.rect),  
             }
-            print(list(annot.rect))
             page_annots.append(item)
             annot = annot.next
 
@@ -35,7 +35,12 @@ def extract_annotations(pdf_path):
 
 if __name__ == "__main__":
     for item in sys.argv[1:]:
-        print(item)
+        if item.startswith("https://drive.google.com/"):
+            import gdown
+            fp = tempfile.NamedTemporaryFile(suffix=".pdf")
+            gdown.download(url=item, output=fp.name)
+            item = fp.name
+        
         annots = extract_annotations(item)
         page_list = list(annots.keys())
         page_list.sort()
