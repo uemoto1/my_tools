@@ -2,8 +2,8 @@
 import os
 import numpy as np
 import ase.io, ase.mep, ase.optimize
-import ase.geometry.find_mic
-import mace.calculators.mace_mp
+import ase.geometry
+import mace.calculators
 
 def init_potential():
     return mace.calculators.mace_mp(
@@ -12,9 +12,9 @@ def init_potential():
         default_dtype="float32", # "float32" or "float64"
     )
 
-initial = ase.io.read("initial.POSCAR.vasp")
-final = ase.io.read("final.POSCAR.vasp")
-n_intermediate = 7  # Intermediate images
+initial = ase.io.read("00/POSCAR")
+final = ase.io.read("12/POSCAR")
+n_intermediate = 11 # Intermediate images
 k = 5.0             # Spring constant (eV/Ang.^2)
 fmax = 0.10         # Force threshold (eV/Ang.)
 steps = 200         # Maximum optimization steps
@@ -32,14 +32,15 @@ print(f"Converged: {converged}")
 
 result = []
 l = 0.0
-for i in range(len(images))
+for i in range(len(images)):
     if i > 0:
         dr = images[i].positions - images[i-1].positions
         v, d = ase.geometry.find_mic(dr, image.cell, image.pbc)
-        l += np.linalg.norm(l)
+        l += np.linalg.norm(d)
     energy = images[i].get_potential_energy()
     result.append((l, energy))
     os.makedirs(f"{i:02d}", exist_ok=True)
     ase.io.write(f"{i:02d}/CONTCAR", images[i], direct=True)
-    print(f"Image {i:02d}: length = {l:12.6f} Ang., energy = {energy:12.6f} eV")
+    print(f"Image {i:02d}: length = {l:9.3f} Ang., energy = {energy:12.6f} eV")
 np.savetxt("neb_path.txt", result, header="length(Ang.) energy(eV)")
+
